@@ -184,6 +184,22 @@ app.get('/get_hak_akses_on_tryout',function (req,res) {
     })
 });
 
+// ambil tryout berdasarkan to
+app.get('/get_to_by_id',function (req,res) {
+    var data = {
+    };
+    connection.query("SELECT * FROM `tb_tryout` WHERE id_tryout = "+req.query.id_tryout+" ", function (err, rows, fields) {
+        if (rows.length !=0){
+            data["To"] = rows;
+            res.json(data);
+        } else{
+            data["To"] = 'Tidak Tryout';
+            res.json(data);
+        }
+    })
+});
+
+
 //ambil soal di TO tertentu
 app.get('/get_soal_on_tryout',function (req,res) {
     var data = {
