@@ -8,7 +8,6 @@ var multer = require('multer');
 var crypto = require('crypto');
 var s = require('multer');
 
-
 var connection = mysql.createConnection({
     host : 'soc.neonjogja.com',
     user : 'neonjogj_soc',
@@ -47,6 +46,13 @@ var storage = multer.diskStorage({
 
 });
 
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 app.get('/',function(req,res){
     var data = {
         "Data":""
@@ -76,14 +82,14 @@ app.get('/get_id_sekolah',function (req,res) {
     };
     connection.query("SELECT `sekolahID` FROM `tb_report-paket` `rp` JOIN `tb_sekolah_pengguna` `sp` ON rp.`id_pengguna` = sp.`penggunaID` " +
         " WHERE `sp`.`penggunaID` ="+req.query.penggunaID+" ", function (err, rows, fields) {
-        if (rows.length !=0){
-            data["ReportPaket"] = rows;
-            res.json(data);
-        } else{
-            data["ReportPaket"] = 'Tidak Ada Data ID Sekolah';
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["ReportPaket"] = rows;
+                res.json(data);
+            } else{
+                data["ReportPaket"] = 'Tidak Ada Data ID Sekolah';
+                res.json(data);
+            }
+        })
 });
 
 //ambil nilai berdasarkan sekolah
@@ -97,14 +103,14 @@ app.get('/get_nilai_by_sekolah',function (req,res) {
         " JOIN `tb_sekolah_pengguna` sp ON rp.`id_pengguna` = sp.`penggunaID` " +
         " WHERE `sp`.`sekolahID` =" +req.query.sekolahID+" " +
         " GROUP BY `pk`.`id_paket`", function (err, rows, fields) {
-        if (rows.length !=0){
-            data["NilaiSekolah"] = rows;
-            res.json(data);
-        } else{
-            data["NilaiSekolah"] = 'Tidak Ada Data Nilai Sekolah';
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["NilaiSekolah"] = rows;
+                res.json(data);
+            } else{
+                data["NilaiSekolah"] = 'Tidak Ada Data Nilai Sekolah';
+                res.json(data);
+            }
+        })
 });
 
 
@@ -116,14 +122,14 @@ app.get('/get_report_by_pengguna',function (req,res) {
         " JOIN `tb_mm-tryoutpaket` mm ON mm.`id` = p.`id_mm-tryout-paket` " +
         " JOIN `tb_paket` pkt ON pkt.`id_paket` = mm.`id_paket` " +
         "JOIN tb_tryout t ON t.`id_tryout` = mm.`id_tryout`", function (err, rows, fields) {
-        if (rows.length !=0){
-            data["ReportPengguna"] = rows;
-            res.json(data);
-        } else{
-            data["ReportPengguna"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["ReportPengguna"] = rows;
+                res.json(data);
+            } else{
+                data["ReportPengguna"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
+                res.json(data);
+            }
+        })
 });
 
 //ambil siswa berdasarkan sekolah
@@ -134,14 +140,14 @@ app.get('/get_siswa_at_school',function (req,res) {
         " FROM (SELECT * FROM `tb_sekolah_pengguna` sp WHERE sp.`sekolahID` = "+req.query.sekolahID+" ) sekop " +
         " JOIN tb_pengguna p ON p.`id` = sekop.penggunaID " +
         " JOIN tb_siswa s ON s.`penggunaID` = p.`id` ", function (err, rows, fields) {
-        if (rows.length !=0){
-            data["ReportPengguna"] = rows;
-            res.json(data);
-        } else{
-            data["ReportPengguna"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["ReportPengguna"] = rows;
+                res.json(data);
+            } else{
+                data["ReportPengguna"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
+                res.json(data);
+            }
+        })
 });
 
 //ambil pengguna yang akan tryout
@@ -153,14 +159,14 @@ app.get('/get_pengguna_on_tryout',function (req,res) {
         " FROM (SELECT * FROM `tb_sekolah_pengguna` sp WHERE sp.`sekolahID` = "+req.query.sekolahID+" ) sekop " +
         " JOIN tb_pengguna p ON p.`id` = sekop.penggunaID " +
         " JOIN tb_siswa s ON s.`penggunaID` = p.`id` ", function (err, rows, fields) {
-        if (rows.length !=0){
-            data["PenggunaOnTryout"] = rows;
-            res.json(data);
-        } else{
-            data["PenggunaOnTryout"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["PenggunaOnTryout"] = rows;
+                res.json(data);
+            } else{
+                data["PenggunaOnTryout"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
+                res.json(data);
+            }
+        })
 });
 
 //ambil hak akses di tryout tertentu
@@ -190,14 +196,14 @@ app.get('/get_soal_on_tryout',function (req,res) {
         " JOIN tb_paket pk ON pk.`id_paket` = p.`id_paket` " +
         " JOIN `tb_mm-tryoutpaket` mmp ON mmp.`id_paket` = pk.`id_paket` " +
         " JOIN `tb_tryout` t ON t.`id_tryout` = mmp.`id_tryout` WHERE t.`id_tryout` = "+req.query.id_tryout, function (err, rows, fields) {
-        if (rows.length !=0){
-            data["Soal"] = rows;
-            res.json(data);
-        } else{
-            data["Soal"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["Soal"] = rows;
+                res.json(data);
+            } else{
+                data["Soal"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
+                res.json(data);
+            }
+        })
 });
 
 //ambil relasi MM paket
@@ -210,14 +216,14 @@ app.get('/get_mm_paket',function (req,res) {
         " JOIN `tb_mm-tryoutpaket` mmp ON mmp.`id_paket` = p.`id_paket` " +
         " JOIN `tb_tryout` t ON t.`id_tryout` = mmp.`id_tryout` " +
         " WHERE t.`id_tryout` ="+req.query.id_tryout, function (err, rows, fields) {
-        if (rows.length !=0){
-            data["MMPaket"] = rows;
-            res.json(data);
-        } else{
-            data["MMPaket"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["MMPaket"] = rows;
+                res.json(data);
+            } else{
+                data["MMPaket"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
+                res.json(data);
+            }
+        })
 });
 
 //ambil PILIHAN JAWABAN YANG ADA DI TO TERTENTU
@@ -232,14 +238,14 @@ app.get('/get_pilihan_jawaban',function (req,res) {
         " JOIN `tb_tryout` t ON t.`id_tryout` = mmp.`id_tryout` " +
         " JOIN `tb_piljawaban` pj ON pj.`id_soal` = b.`id_soal` " +
         " WHERE t.`id_tryout` = "+req.query.id_tryout, function (err, rows, fields) {
-        if (rows.length !=0){
-            data["PilihanJawaban"] = rows;
-            res.json(data);
-        } else{
-            data["PilihanJawaban"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["PilihanJawaban"] = rows;
+                res.json(data);
+            } else{
+                data["PilihanJawaban"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
+                res.json(data);
+            }
+        })
 });
 
 //ambil paket berdasarkan id TO
@@ -251,14 +257,14 @@ app.get('/get_paket_by_toid',function (req,res) {
         " ON p.`id_paket` = mm.`id_paket` " +
         " JOIN `tb_tryout` t ON t.`id_tryout` = mm.`id_tryout` " +
         "WHERE t.`id_tryout` = "+req.query.id_tryout, function (err, rows, fields) {
-        if (rows.length !=0){
-            data["PilihanJawaban"] = rows;
-            res.json(data);
-        } else{
-            data["PilihanJawaban"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["PilihanJawaban"] = rows;
+                res.json(data);
+            } else{
+                data["PilihanJawaban"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
+                res.json(data);
+            }
+        })
 });
 
 
@@ -273,14 +279,14 @@ app.get('/check_user_admin_offline',function (req,res) {
         " JOIN `tb_sekolah` `s` ON `s`.`id` = `sp`.`sekolahID` " +
         " WHERE `kataSandi` = '"+req.query.kataSandi+"' AND `pengguna`.`status` = 1 " +
         " AND `pengguna`.`hakAkses` = 'pengawas' AND (namaPengguna='"+req.query.namaPengguna+"' OR eMail='"+req.query.eMail+"') ", function (err, rows, fields) {
-        if (rows.length !=0){
-            data["AdminOffline"] = rows;
-            res.json(data);
-        } else{
-            data["AdminOffline"] = false;
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["AdminOffline"] = rows;
+                res.json(data);
+            } else{
+                data["AdminOffline"] = false;
+                res.json(data);
+            }
+        })
 });
 
 //GET TO YANG HAK AKSESNYA ID PENGGUNA TERTENTU
@@ -292,41 +298,60 @@ app.get('/get_all_to',function (req,res) {
         " JOIN tb_sekolah_pengguna s ON s.`id` = hp.`id_pengawas` " +
         " JOIN tb_pengguna u ON u.`id` = s.`penggunaID` " +
         " WHERE s.`penggunaID`="+req.query.penggunaID, function (err, rows, fields) {
-        if (rows.length !=0){
-            data["TryoutPengguna"] = rows;
-            res.json(data);
-        } else{
-            data["TryoutPengguna"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["TryoutPengguna"] = rows;
+                res.json(data);
+            } else{
+                data["TryoutPengguna"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
+                res.json(data);
+            }
+        })
 });
 
 // get pasangan tryout mm paket
-    app.get('/get_mm_tryout_paket',function (req,res) {
+app.get('/get_mm_tryout_paket',function (req,res) {
     var data = {
     };
     connection.query("SELECT mm.id, mm.id_paket, mm.id_tryout FROM `tb_mm-tryoutpaket` mm " +
         " WHERE `id_tryout` ="+req.query.id_tryout, function (err, rows, fields) {
-        if (rows.length !=0){
-            data["TryoutPengguna"] = rows;
-            res.json(data);
-        } else{
-            data["TryoutPengguna"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
-            res.json(data);
-        }
-    })
+            if (rows.length !=0){
+                data["TryoutPengguna"] = rows;
+                res.json(data);
+            } else{
+                data["TryoutPengguna"] = 'Tidak Ada Data Report Berdasarkan Pengguna';
+                res.json(data);
+            }
+        })
 });
 
+app.post('/addReport',function (req,res){
+    var data = {};
+    dl={
+        'siswaID':req.body.siswaID,
+        'id_pengguna':req.body.id_pengguna,    
+        'id_mm_tryout_paket':req.body.id_mm_tryout_paket,  
+        'jmlh_kosong':req.body.jmlh_kosong,
+        'jmlh_benar':req.body.jmlh_benar,
+        'jmlh_salah':req.body.jmlh_salah,
+        'total_nilai':req.body.total_nilai,
+        'poin':req.body.poin,
+        'tgl_pengerjaan':req.body.tgl_pengerjaan,
+        'status_pengerjaan':req.body.status_pengerjaan,
+        'rekap_hasil_koreksi':req.body.rekap_hasil_koreksi
+    };
+    var sql = "INSERT INTO `tb_report-paket`(id_report,siswaID,id_pengguna,`id_mm-tryout-paket`,"+
+    "jmlh_kosong,jmlh_benar,jmlh_salah,total_nilai,poin,"+
+    "tgl_pengerjaan,status_pengerjaan,rekap_hasil_koreksi)"+
+    "VALUES"+
+    "('',"+dl.siswaID+","+dl.id_pengguna+","+dl.id_mm_tryout_paket+","+dl.jmlh_kosong+","+dl.jmlh_benar+","+
+    dl.jmlh_salah+","+dl.total_nilai+","+dl.poin+",'"+dl.tgl_pengerjaan+"',"+dl.status_pengerjaan+",'"+
+    dl.rekap_hasil_koreksi+"')";
 
-//upload poto
-app.post('/uploadFoto', multer({storage: storage}).single('upload'), function(req, res) {
-    console.log(req.file);
-    console.log(req.body);
-    console.log("sebelum di isi : "+s);
-    s = req.file.filename;
-    console.log("yaaaannggggg  iniiiiiiiiiiiiii "+s);
-    return res.status(204).end(), res.s;
+    connection.query(sql, function (err, result) {
+        if (err) throw err;
+        data['statusInsert'] = "Berhasil di insert report"
+    });
+    res.json(data);
 });
 
 // Add data invoidce
